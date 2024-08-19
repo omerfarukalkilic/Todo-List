@@ -25,7 +25,7 @@ jobs:
     - name: Deploy to EC2
       run: |
         ssh -i "$DEPLOY_KEY" ec2-user@$EC2_INSTANCE_IP << 'EOF'
-          cd /path/to/your/app
+          cd /var/www/html
           git pull origin main
           # Restart your application if needed
           # For example: sudo systemctl restart my-app.service
