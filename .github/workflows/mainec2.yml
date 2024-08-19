@@ -14,29 +14,13 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Add EC2 host key
-  run: |
-    mkdir -p ~/.ssh
-    ssh-keyscan -H $EC2_INSTANCE_IP >> ~/.ssh/known_hosts
-
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.EC2_INSTANCE_IP }} >> ~/.ssh/known_hosts
 
     - name: Deploy to EC2
       run: |
-        ssh -i "$DEPLOY_KEY" ec2-user@$EC2_INSTANCE_IP << 'EOF'
-          # Ensure the target directory exists
-          mkdir -p /var/www/html
-
-          # Navigate to the target directory
-          cd /var/www/html
-
-          # Remove old files if any
-          rm -rf *
-
-          # Pull the latest code from GitHub repository
-          git pull origin main || git clone https://github.com/yourusername/your-repo.git .
-
-          # Set permissions if needed
-          sudo chown -R ec2-user:ec2-user /var/www/html
-        EOF
+        rsync -avz -e "ssh -i ${{ secrets.DEPLOY_KEY }}" ./ ec2-user@$EC2_INSTANCE_IP:/var/www/html
       env:
         DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         EC2_INSTANCE_IP: ${{ secrets.EC2_INSTANCE_IP }}
