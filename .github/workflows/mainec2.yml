@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Deploy Static Site to EC2
 
 on:
   push:
@@ -13,18 +13,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-
-        - name: Deploy to EC2
+    - name: Deploy to EC2
       run: |
         ssh -i "$DEPLOY_KEY" ec2-user@$EC2_INSTANCE_IP << 'EOF'
+          # Ensure the target directory exists
+          mkdir -p /var/www/html
+
+          # Navigate to the target directory
           cd /var/www/html
-          git pull origin main
-          # Restart your application if needed
-          # For example: sudo systemctl restart my-app.service
+
+          # Remove old files if any
+          rm -rf *
+
+          # Pull the latest code from GitHub repository
+          git pull origin main || git clone https://github.com/yourusername/your-repo.git .
+
+          # Set permissions if needed
+          sudo chown -R ec2-user:ec2-user /var/www/html
         EOF
       env:
         DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
