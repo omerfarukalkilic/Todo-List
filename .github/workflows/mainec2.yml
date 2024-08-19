@@ -13,6 +13,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Add EC2 host key
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H $EC2_INSTANCE_IP >> ~/.ssh/known_hosts
+
     - name: Deploy to EC2
       run: |
         ssh -i "$DEPLOY_KEY" ec2-user@$EC2_INSTANCE_IP << 'EOF'
