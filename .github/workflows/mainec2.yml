@@ -18,11 +18,7 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-
-    - name: Deploy to EC2
+        - name: Deploy to EC2
       run: |
         ssh -i "$DEPLOY_KEY" ec2-user@$EC2_INSTANCE_IP << 'EOF'
           cd /var/www/html
