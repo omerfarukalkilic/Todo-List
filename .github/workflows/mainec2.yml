@@ -20,7 +20,7 @@ jobs:
 
     - name: Deploy to EC2
       run: |
-        echo "$DEPLOY_KEY" > private_key.pem
+        echo "$DEPLOY_KEY" > key.pem
         chmod 600 key.pem
         rsync -avz -e "ssh -i key.pem" ./ ec2-user@${{ secrets.EC2_INSTANCE_IP }}:/var/www/html/
       env:
